@@ -1,7 +1,7 @@
 import prisma from '../../_helpers/prisma.js'
 import handleErrors from '../../_helpers/handle-errors.js'
 
-const controllersApiWishlistsShow = async (req, res) => {
+const controllersApiPixelShow = async (req, res) => {
   try {
     const { params: { id } } = req
     const foundWishlist = await prisma.wishlist.findUnique({ where: { id: Number(id) }, rejectOnNotFound: true })
@@ -11,4 +11,4 @@ const controllersApiWishlistsShow = async (req, res) => {
   }
 }
 
-export default controllersApiWishlistsShow
+export default controllersApiPixelShow

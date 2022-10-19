@@ -10,10 +10,12 @@ import { ironSession } from 'iron-session/express'
 import * as http from 'http'
 import * as SocketIO from 'socket.io'
 import parseData from './src/_middlewares/parse-data.js'
+import MessagesHandlers from './src/handlers/messages/messagesHandler.js'
 
 const app = express() // The instance that "host" our server
 const port = process.env.PORT || 3000 // The port number our server runs on
 
+// creating socket io server
 const server = http.createServer(app)
 const io = new SocketIO.Server(server)
 
@@ -61,17 +63,11 @@ app.use(parseData) // parses multi-part to req.body and req.files
 // Defining the routes for our server
 app.use('/', (await import('./src/routes.js')).default)
 
-io.on('connection', (socket) => {
-  console.log('a user connected')
-  socket.on('disconnect', () => {
-    console.log('user disconnected')
-  })
+const onConnection = (socket) => {
+  MessagesHandlers(io, socket)
+}
 
-  socket.on('chat message', (msg) => {
-    io.emit('chat message', msg)
-    console.log(`message: ${msg}`)
-  })
-})
+io.on('connection', onConnection)
 
 // Starts the server
 server.listen(port, () => {

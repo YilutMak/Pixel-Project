@@ -32,23 +32,21 @@
   form.addEventListener('submit', function (e) {
     e.preventDefault()
     if (input.value) {
-      socket.emit('chat message', input.value)
-      input.value = ''
+      axios({
+        method: 'GET',
+        url: '/api/my/profile',
+      }).then((resp) => {
+        socket.emit('chat message', input.value,resp)
+        input.value = ''
+      })
     }
   })
 
-  socket.on('chat message', function (msg) {
-
-    axios({
-      method: 'GET',
-      url: '/api/my/profile',
-    }).then((resp) => {
-      console.log(resp)
-      var item = document.createElement('li')
-      item.textContent = `${resp.data.username}: ` + msg
-      messages.appendChild(item)
-      window.scrollTo(0, document.body.scrollHeight)
-    })
+  socket.on('chat message', function (msg, user) {
+    var item = document.createElement('li')
+    item.textContent = `${user.data.username}: ` + msg
+    messages.appendChild(item)
+    window.scrollTo(0, document.body.scrollHeight)
   })
 
 </script>

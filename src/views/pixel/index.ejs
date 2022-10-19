@@ -11,7 +11,6 @@ if (isLoading) return `<div class="text-center mb-3">Loading...</div>`
   return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
 }
 
-
 const generatePage = (info) => {
   const $page = $('#pages-Pixel-index')
   const $title = generateTitle(info)
@@ -19,9 +18,22 @@ const generatePage = (info) => {
   $page.html('').append($title).append($canvas)
 }
 
+//const getpixels = () => {
+  axios({
+        method: 'GET',
+        url: '/api/pixel'
+      }).then((resp) => {
+        const canvas = resp.data.pixel
+        console.log(canvas)
+      })
+
+//}
+
+
 
 $(document).ready(() => {
   generatePage({ isLoading: true })
+  //getPixels()
 })
 </script>
 
