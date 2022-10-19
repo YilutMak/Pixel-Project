@@ -1,0 +1,54 @@
+<button class="button-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft"
+  aria-controls="offcanvasLeft">
+  comment
+</button>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel" style="margin-top: 55px">
+  <div class="offcanvas-header">
+    <h5 id="offcanvasLeftLabel">Activity & Chat</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+
+    <ul id="messages"></ul>
+    <form id="comment" action="">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>
+
+    <!--<form id="comment" action="" class="mx-0">
+      <input id="input" autocomplete="off" /><button>Send</button>
+    </form>-->
+  </div>
+</div>
+
+<script>
+
+
+  var socket = io();
+
+  var form = document.getElementById('comment')
+  var input = document.getElementById('input')
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault()
+    if (input.value) {
+      socket.emit('chat message', input.value)
+      input.value = ''
+    }
+  })
+
+  socket.on('chat message', function (msg) {
+
+    axios({
+      method: 'GET',
+      url: '/api/my/profile',
+    }).then((resp) => {
+      console.log(resp)
+      var item = document.createElement('li')
+      item.textContent = `${resp.data.username}: ` + msg
+      messages.appendChild(item)
+      window.scrollTo(0, document.body.scrollHeight)
+    })
+  })
+
+</script>

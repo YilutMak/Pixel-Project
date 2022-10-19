@@ -1,0 +1,29 @@
+<%- contentFor('styles') %>
+<%- contentFor('scripts') %>
+<script>
+const generateTitle = () => {
+  return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
+}
+
+const generateCanvas = ({ isLoading }) => {
+if (isLoading) return `<div class="text-center mb-3">Loading...</div>`
+
+  return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
+}
+
+
+const generatePage = (info) => {
+  const $page = $('#pages-Pixel-index')
+  const $title = generateTitle(info)
+  const $canvas = generateCanvas(info)
+  $page.html('').append($title).append($canvas)
+}
+
+
+$(document).ready(() => {
+  generatePage({ isLoading: true })
+})
+</script>
+
+<%- contentFor('body') %>
+<div id="pages-Pixel-index" class="container"></div>
