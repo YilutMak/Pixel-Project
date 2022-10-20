@@ -3,17 +3,26 @@ import handleErrors from '../../_helpers/handle-errors.js'
 
 const controllersApiPixelIndex = async (req, res) => {
   try {
-    const foundPixel = await prisma.pixel.findMany({
-      distinct: ['x', 'y'],
+    const foundPixels = await prisma.pixel.findMany({
+      distinct: ['y', 'x'],
       orderBy: [
-        { timeStamp: 'desc' },
         { y: 'asc' },
-        { x: 'asc' }
+        { x: 'asc' },
+        { timeStamp: 'desc' }
       ]
     })
 
+    const groupedPixels = []
+
+    foundPixels.forEach((pixel) => {
+      const rowIndex = pixel.y
+      const colIndex = pixel.x
+      if (!groupedPixels[rowIndex]) groupedPixels[rowIndex] = []
+      groupedPixels[rowIndex][colIndex] = pixel
+    })
+
     return res.status(200).json({
-      pixel: foundPixel
+      pixel: groupedPixels
     })
   } catch (err) {
     return handleErrors(res, err)

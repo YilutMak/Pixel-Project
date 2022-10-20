@@ -5,10 +5,51 @@ const generateTitle = () => {
   return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
 }
 
-const generateCanvas = ({ isLoading }) => {
-if (isLoading) return `<div class="text-center mb-3">Loading...</div>`
+const generateCanvas = ({ isLoading, pixels }) => {
+  if (isLoading) return `<div class="text-center mb-3">Loading...</div>`
 
-  return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
+  return `
+    <div id="pixel-wrapper">
+      ${
+        pixels.map((row, y) => {
+          return `
+          <div
+            class="row justify-content-center align-items-center flex-nowrap mx-auto"
+            style="width: ${row.length * 10}px
+            border: .5px solid #C8C8C8;
+            "
+          >
+            ${row.map((col, x) => {
+            return `
+                  <div
+                    class="pixel-col p-0"
+                    style="
+                      background-color: ${col.RGB};
+                      width: 9px;
+                      height: 9px;
+                      border: .5px solid #C8C8C8;
+                    "
+                  ></div>
+                `
+          }).join('')
+            }
+          </div>
+        `
+        }).join('')
+      }
+    </div>
+  `
+
+
+  //pixels.map((row, y) => {
+  //    return `
+  //      <div>
+  //        ${row.map((col, x) => {
+  //          return `<div style="background-color: ${col.color};"></div>`
+  //        })}
+  //      </div>
+  //    `
+  //  })
 }
 
 const generatePage = (info) => {
@@ -18,24 +59,25 @@ const generatePage = (info) => {
   $page.html('').append($title).append($canvas)
 }
 
-//const getpixels = () => {
+const getPixels = () => {
   axios({
         method: 'GET',
         url: '/api/pixel'
       }).then((resp) => {
-        const canvas = resp.data.pixel
-        console.log(canvas)
+        var pixels = resp.data.pixel
+        //console.log(pixels)
+        generatePage({pixels})
       })
-
-//}
+}
 
 
 
 $(document).ready(() => {
   generatePage({ isLoading: true })
-  //getPixels()
+  getPixels()
+
 })
 </script>
 
 <%- contentFor('body') %>
-<div id="pages-Pixel-index" class="container"></div>
+<div id="pages-Pixel-index" class="mb-6"></div>

@@ -16,23 +16,23 @@ model User {
   email        String     @unique
   passwordHash String
   messages     Messages[]
-  Pixel        Pixel[]
+  pixel        Pixel[]
 }
 
 model Pixel {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   x         Int
   y         Int
-  userID    User   @relation(fields: [userId], references: [id])
-  userId    Int
-  timeStamp Int
+  timeStamp DateTime @default(now()) @db.Timestamptz()
   RGB       String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
 }
 
 model Messages {
   id        Int    @id @default(autoincrement())
   message   String
-  userID    User   @relation(fields: [userId], references: [id])
+  user      User   @relation(fields: [userId], references: [id])
   userId    Int
   timeStamp Int
 }
