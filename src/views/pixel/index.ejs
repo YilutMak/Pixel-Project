@@ -13,9 +13,33 @@ const generateCanvas = ({ isLoading, pixels }) => {
       ${
         pixels.map((row, y) => {
           return `
+
+          <div id="color-modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Paint this Pixel!</h5>
+                  <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <div class="container">
+                    <label for="colorpicker">Choose pixel color:</label>
+                    <input type="color" id="colorpicker" value="#0000ff">
+                  </div>
+                </div>
+                <div class="modal-footer">
+                  <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
+                  <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div
             class="row justify-content-center align-items-center flex-nowrap mx-auto"
-            style="width: ${row.length * 10}px
+            style="width: ${row.length * 9}px
             border: .5px solid #C8C8C8;
             "
           >
@@ -27,7 +51,7 @@ const generateCanvas = ({ isLoading, pixels }) => {
                       background-color: ${col.RGB};
                       width: 9px;
                       height: 9px;
-                      border: .5px solid #C8C8C8;
+                      border: .1px solid #C8C8C8;
                     "
                   ></div>
                 `
@@ -39,18 +63,9 @@ const generateCanvas = ({ isLoading, pixels }) => {
       }
     </div>
   `
-
-
-  //pixels.map((row, y) => {
-  //    return `
-  //      <div>
-  //        ${row.map((col, x) => {
-  //          return `<div style="background-color: ${col.color};"></div>`
-  //        })}
-  //      </div>
-  //    `
-  //  })
 }
+
+let currentPixel
 
 const generatePage = (info) => {
   const $page = $('#pages-Pixel-index')
@@ -70,13 +85,40 @@ const getPixels = () => {
       })
 }
 
+const handlePixelClick = (e) => {
+  e.preventDefault()
+  //console.log(e)
+  console.log(e.target)
+  currentPixel = e.target
+  $("#color-modal").modal('show')
+  return currentPixel
+}
 
+const handleModalClick = (e) => {
+  e.preventDefault()
+  console.log('closed')
+  $("#color-modal").modal('hide')
+}
+
+const handleModalConfirm = (e) => {
+  e.preventDefault()
+  console.log('confirm')
+  const colorHex = $('#colorpicker')
+  console.log(colorHex.val())
+  console.log(currentPixel)
+  $(currentPixel).css("background-color", colorHex.val())
+  $("#color-modal").modal('hide')
+}
 
 $(document).ready(() => {
   generatePage({ isLoading: true })
   getPixels()
-
+  $('#pages-Pixel-index').on('click', '.pixel-col', handlePixelClick)
+  $('#pages-Pixel-index').on('click', '#modal-close', handleModalClick)
+  $('#pages-Pixel-index').on('click', '#confirm', handleModalConfirm)
 })
+
+
 </script>
 
 <%- contentFor('body') %>
