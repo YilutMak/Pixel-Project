@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Pixel" ALTER COLUMN "timeStamp" SET DATA TYPE TIMESTAMP(3);

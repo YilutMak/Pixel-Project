@@ -13,7 +13,8 @@ router.delete('/api/auth/logout', (await import('./controllers/api/auth/logout.j
 router.get('/api/my/profile', authenticateUser('json'), (await import('./controllers/api/my/profile/show.js')).default)
 
 // API | pixel
-router.get('/api/pixel', (await import('./controllers/api/pixel/index.js')).default)
+router.get('/api/pixels', (await import('./controllers/api/pixel/index.js')).default)
+router.get('/api/pixel', (await import('./controllers/api/pixel/show.js')).default)
 
 // API | NOT FOUND
 router.use('/api', (await import('./controllers/api/not-found.js')).default)

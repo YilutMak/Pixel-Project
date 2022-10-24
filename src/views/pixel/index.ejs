@@ -14,6 +14,26 @@ const generateCanvas = ({ isLoading, pixels }) => {
         pixels.map((row, y) => {
           return `
 
+          <div id="sign-in-modal" class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title">Sign in required</h5>
+                  <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" onclick="window.location.href='/auth/login';">
+                    log in
+                  </button>
+                  <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
           <div id="color-modal" class="modal" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-dialog-centered" role="document">
               <div class="modal-content">
@@ -46,6 +66,9 @@ const generateCanvas = ({ isLoading, pixels }) => {
             ${row.map((col, x) => {
             return `
                   <div
+                    id="x-${x}-y-${y}"
+                    data-x="${x}"
+                    data-y="${y}"
                     class="pixel-col p-0"
                     style="
                       background-color: ${col.RGB};
@@ -66,6 +89,8 @@ const generateCanvas = ({ isLoading, pixels }) => {
 }
 
 let currentPixel
+let user
+let pixelData
 
 const generatePage = (info) => {
   const $page = $('#pages-Pixel-index')
@@ -77,7 +102,7 @@ const generatePage = (info) => {
 const getPixels = () => {
   axios({
         method: 'GET',
-        url: '/api/pixel'
+        url: '/api/pixels'
       }).then((resp) => {
         var pixels = resp.data.pixel
         //console.log(pixels)
@@ -85,34 +110,90 @@ const getPixels = () => {
       })
 }
 
+const getMyProfileIndex = () => {
+  axios({
+    method: 'GET',
+    url: '/api/my/profile',
+  }).then((resp) => {
+    user = { user: resp.data }
+    console.log("signed in")
+  }).catch(() => {
+    user = null
+    console.log("please sign in")
+  })
+}
+
+const getPixel = async (xCoord, yCoord) => {
+  await axios({
+    method: 'GET',
+    url: '/api/pixel',
+    params : {
+      x: xCoord,
+      y: yCoord
+    }
+  }).then((resp) => {
+    console.log('pixel found')
+    //console.log(resp.data)
+    pixelData = resp.data
+  }).catch(() => {
+    console.log('pixel not found')
+  })
+}
+
 const handlePixelClick = (e) => {
   e.preventDefault()
-  //console.log(e)
-  console.log(e.target)
-  currentPixel = e.target
-  $("#color-modal").modal('show')
-  return currentPixel
+  const $elem = $(e.currentTarget)
+  currentPixel = $elem
+  const xCoord = $elem.data('x')
+  const yCoord = $elem.data('y')
+  //console.log(xCoord)
+  //console.log(yCoord)
+
+
+const pixelPress = async() => {
+  await getPixel(xCoord, yCoord)
+  //console.log(pixelData.x)
+  //console.log(pixelData.y)
+  //console.log(pixelData.timeStamp)
+  const timeCreated = new Date(pixelData.timeStamp)
+  console.log(Math.floor((timeCreated.getTime())/1000))
+  console.log(Math.floor((Date.now())/1000))
+  console.log(Math.floor((Math.floor((Date.now()) / 1000)- Math.floor((timeCreated.getTime()) / 1000))/60))
+
+
+      if (user) {
+        $("#color-modal").modal('show')
+      } else {
+        $("#sign-in-modal").modal('show')
+      }
+}
+
+  pixelPress(xCoord, yCoord)
 }
 
 const handleModalClick = (e) => {
   e.preventDefault()
   console.log('closed')
-  $("#color-modal").modal('hide')
+  //console.log($(e.target).parents(".modal"))
+  //$("#color-modal").modal('hide')
+  $(e.target).parents(".modal").modal('hide')
 }
 
 const handleModalConfirm = (e) => {
   e.preventDefault()
   console.log('confirm')
   const colorHex = $('#colorpicker')
-  console.log(colorHex.val())
-  console.log(currentPixel)
+  //console.log(colorHex.val())
+  //console.log(currentPixel)
   $(currentPixel).css("background-color", colorHex.val())
   $("#color-modal").modal('hide')
 }
 
+
 $(document).ready(() => {
   generatePage({ isLoading: true })
   getPixels()
+  getMyProfileIndex()
   $('#pages-Pixel-index').on('click', '.pixel-col', handlePixelClick)
   $('#pages-Pixel-index').on('click', '#modal-close', handleModalClick)
   $('#pages-Pixel-index').on('click', '#confirm', handleModalConfirm)

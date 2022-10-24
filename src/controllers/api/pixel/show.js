@@ -3,9 +3,17 @@ import handleErrors from '../../_helpers/handle-errors.js'
 
 const controllersApiPixelShow = async (req, res) => {
   try {
-    const { params: { id } } = req
-    const foundWishlist = await prisma.wishlist.findUnique({ where: { id: Number(id) }, rejectOnNotFound: true })
-    return res.status(200).json(foundWishlist)
+    const { query: { x, y } } = req
+    const foundPixel = await prisma.pixel.findFirst({
+      where: {
+        x: Number(x),
+        y: Number(y)
+      },
+      orderBy: [
+        { timeStamp: 'desc' }
+      ]
+    })
+    return res.status(200).json(foundPixel)
   } catch (err) {
     return handleErrors(res, err)
   }
