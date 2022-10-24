@@ -7,56 +7,55 @@ const generateTitle = () => {
 
 const generateCanvas = ({ isLoading, pixels }) => {
   if (isLoading) return `<div class="text-center mb-3">Loading...</div>`
-
   return `
+
+    <div id="sign-in-modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Sign in required</h5>
+            <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" onclick="window.location.href='/auth/login';">
+              log in
+            </button>
+            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="color-modal" class="modal" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Paint this Pixel!</h5>
+            <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container">
+              <label for="colorpicker">Choose pixel color:</label>
+              <input type="color" id="colorpicker" value="#0000ff">
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
+            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="pixel-wrapper">
       ${
         pixels.map((row, y) => {
           return `
-
-          <div id="sign-in-modal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Sign in required</h5>
-                  <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-primary" onclick="window.location.href='/auth/login';">
-                    log in
-                  </button>
-                  <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <div id="color-modal" class="modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Paint this Pixel!</h5>
-                  <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                  </button>
-                </div>
-                <div class="modal-body">
-                  <div class="container">
-                    <label for="colorpicker">Choose pixel color:</label>
-                    <input type="color" id="colorpicker" value="#0000ff">
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
-                  <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
           <div
             class="row justify-content-center align-items-center flex-nowrap mx-auto"
             style="width: ${row.length * 9}px
@@ -88,9 +87,34 @@ const generateCanvas = ({ isLoading, pixels }) => {
   `
 }
 
+  generatePixelTakenModal = (pixelData , timeLeft) => {
+    return `
+      <div id="pixel-taken-modal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">This pixel is occupied!</h5>
+              <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <p>Pixel created: <b>${pixelData.user.username}</b> </p>
+              <p>Unlocks in: <b>${timeLeft} mins</b> </p>
+            </div>
+            <div class="modal-footer">
+              <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  }
+
 let currentPixel
 let user
 let pixelData
+let coolDown = 400
 
 const generatePage = (info) => {
   const $page = $('#pages-Pixel-index')
@@ -154,18 +178,31 @@ const pixelPress = async() => {
   await getPixel(xCoord, yCoord)
   //console.log(pixelData.x)
   //console.log(pixelData.y)
-  //console.log(pixelData.timeStamp)
-  const timeCreated = new Date(pixelData.timeStamp)
-  console.log(Math.floor((timeCreated.getTime())/1000))
-  console.log(Math.floor((Date.now())/1000))
-  console.log(Math.floor((Math.floor((Date.now()) / 1000)- Math.floor((timeCreated.getTime()) / 1000))/60))
+  console.log(pixelData.timeStamp)
+  const timeCreated = (Math.floor((new Date(pixelData.timeStamp)) / 1000))/60
+  const currentTime = (Math.floor((Date.now()) / 1000))/60
+  console.log(timeCreated)
+  console.log(currentTime)
+  //console.log(Math.floor(currentTime-timeCreated))
 
-
-      if (user) {
-        $("#color-modal").modal('show')
-      } else {
-        $("#sign-in-modal").modal('show')
-      }
+  if (currentTime - timeCreated > coolDown) {
+    $("#color-modal").modal('show')
+    if (user) {
+      $("#color-modal").modal('show')
+    } else {
+      $("#sign-in-modal").modal('show')
+    }
+  }else{
+    const $page = $('#pages-Pixel-index')
+    //console.log(pixelData)
+    const timeLeft = coolDown - (currentTime - timeCreated)
+    console.log(timeLeft)
+    const $takenModal = $(generatePixelTakenModal(pixelData , timeLeft))
+    //console.log($takenModal)
+    //console.log($page.html())
+    $page.append($takenModal)
+    $("#pixel-taken-modal").modal('show')
+  }
 }
 
   pixelPress(xCoord, yCoord)

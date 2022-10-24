@@ -9,6 +9,9 @@ const controllersApiPixelShow = async (req, res) => {
         x: Number(x),
         y: Number(y)
       },
+      include: {
+        user: true
+      },
       orderBy: [
         { timeStamp: 'desc' }
       ]
