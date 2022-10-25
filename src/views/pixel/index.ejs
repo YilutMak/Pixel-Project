@@ -158,57 +158,56 @@ const handlePixelClick = (e) => {
   //console.log(xCoord)
   //console.log(yCoord)
 
-const $pixelTakenInfo = (pixelData, timeLeft) => {
-  return `
-        <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">This pixel is occupied!</h5>
-            <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div id="pixel-taken-body" class="modal-body">
-            <p> Pixel created: <b>${pixelData.user.username}</b> </p>
-            <p>Color:
-              <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>  </p>
-            <p>Unlocks in: <b>${timeLeft} mins</b> </p>
-          </div>
-          <div class="modal-footer">
-            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+  const $pixelTakenInfo = (pixelData, timeLeft) => {
+    return `
+          <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">This pixel is occupied!</h5>
+              <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="pixel-taken-body" class="modal-body">
+              <p> Pixel created: <b>${pixelData.user.username}</b> </p>
+              <p>Color:
+                <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>  </p>
+              <p>Unlocks in: <b>${timeLeft} mins</b> </p>
+            </div>
+            <div class="modal-footer">
+              <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
           </div>
         </div>
-      </div>
-  `
-}
-
-const pixelPress = async() => {
-  await getPixel(xCoord, yCoord)
-  //console.log(pixelData.x)
-  //console.log(pixelData.y)
-  //console.log(pixelData.timeStamp)
-  const timeCreated = (Math.floor((new Date(pixelData.timeStamp)) / 1000))/60
-  const currentTime = (Math.floor((Date.now()) / 1000))/60
-  //console.log(timeCreated)
-  //console.log(currentTime)
-  //console.log(Math.floor(currentTime-timeCreated))
-
-  if (currentTime - timeCreated > coolDown) {
-    if (user) {
-      $("#color-modal").modal('show')
-    } else {
-      $("#sign-in-modal").modal('show')
-    }
-  }else{
-    //console.log(pixelData)
-    const timeLeft = Math.floor(coolDown - (currentTime - timeCreated))
-    //console.log(timeLeft)
-    const $pixelTakenModal = $('#pixel-taken-modal')
-    $pixelTakenModal.html('').append($pixelTakenInfo(pixelData,timeLeft))
-    $("#pixel-taken-modal").modal('show')
+    `
   }
-}
 
+  const pixelPress = async() => {
+    await getPixel(xCoord, yCoord)
+    //console.log(pixelData.x)
+    //console.log(pixelData.y)
+    //console.log(pixelData.timeStamp)
+    const timeCreated = (Math.floor((new Date(pixelData.timeStamp)) / 1000))/60
+    const currentTime = (Math.floor((Date.now()) / 1000))/60
+    //console.log(timeCreated)
+    //console.log(currentTime)
+    //console.log(Math.floor(currentTime-timeCreated))
+
+    if (currentTime - timeCreated > coolDown) {
+      if (user) {
+        $("#color-modal").modal('show')
+      } else {
+        $("#sign-in-modal").modal('show')
+      }
+    }else{
+      //console.log(pixelData)
+      const timeLeft = Math.floor(coolDown - (currentTime - timeCreated))
+      //console.log(timeLeft)
+      const $pixelTakenModal = $('#pixel-taken-modal')
+      $pixelTakenModal.html('').append($pixelTakenInfo(pixelData,timeLeft))
+      $("#pixel-taken-modal").modal('show')
+    }
+  }
   pixelPress(xCoord, yCoord)
 }
 
@@ -236,7 +235,11 @@ const handleModalConfirm = (e) => {
 
 
   socket.on('pixel updated', async(pixelData, color, currentUser, timeStamp) => {
-    await getPixels()
+    console.log(pixelData)
+    console.log($(`#x-${pixelData.x}-y-${pixelData.y}`))
+    const $updatingPixel = $(`#x-${pixelData.x}-y-${pixelData.y}`)
+    $updatingPixel.css("background-color", color)
+
     $("#color-modal").modal('hide')
     const username = currentUser.user.username
     await getPixel(pixelData.x, pixelData.y)
@@ -279,6 +282,14 @@ const handleModalConfirm = (e) => {
   })
 }
 
+const handleMouseHover = (e) => {
+  e.preventDefault()
+  $('.pixel-col').css("border", '.1px solid #C8C8C8')
+  const $elem = $(e.currentTarget)
+  console.log($elem)
+  $elem.css("border", '3px solid #D2042D')
+
+}
 
 $(document).ready(() => {
   generatePage({ isLoading: true })
@@ -287,6 +298,7 @@ $(document).ready(() => {
   $('#pages-Pixel-index').on('click', '.pixel-col', handlePixelClick)
   $('#pages-Pixel-index').on('click', '#modal-close', handleModalClick)
   $('#pages-Pixel-index').on('click', '#confirm', handleModalConfirm)
+  $('#pages-Pixel-index').on('mouseover', '.pixel-col', handleMouseHover)
 })
 
 

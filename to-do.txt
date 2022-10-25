@@ -12,15 +12,16 @@ Is the user signed in?//done
       show pixel taken modal (show time remaining)//done
 
 backend
-get comments
-display comments
+-get comments
+-display comments
+
+questions to ask
+-how to host on hiroku
+-how to que updates on pixels
+-how come pixel border cannot be smaller
 
 extra features:
 get pixel users
 highlight pixels
 
 dropdb -f pixel_project
-
-100 press in 50 sec
-2 press every sec
-300,000 in 150,000sec(2500mins)(42hrs)

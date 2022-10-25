@@ -30,9 +30,9 @@ model Pixel {
 }
 
 model Messages {
-  id        Int    @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   message   String
-  user      User   @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  timeStamp Int
+  timeStamp DateTime @default(now()) @db.Timestamptz()
 }

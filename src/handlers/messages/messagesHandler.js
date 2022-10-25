@@ -2,14 +2,15 @@ import prisma from '../../controllers/_helpers/prisma.js'
 
 const MessagesHandlers = (io, socket) => {
   const receiveMessage = (msg, user) => {
-    io.emit('chat message', msg, user)
+    const timeStamp = Date.now()
+    io.emit('chat message', msg, user, timeStamp)
     console.log(`${user.data.username}: ${msg}`)
 
     const messageCreate = async () => {
       const dataToSave = {
         userId: user.data.id,
         message: msg,
-        timeStamp: Date.now()
+        timeStamp: new Date(Date.now())
       }
       await prisma.messages.create({ data: dataToSave })
     }

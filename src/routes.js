@@ -15,6 +15,10 @@ router.get('/api/my/profile', authenticateUser('json'), (await import('./control
 // API | pixel
 router.get('/api/pixels', (await import('./controllers/api/pixel/index.js')).default)
 router.get('/api/pixel', (await import('./controllers/api/pixel/show.js')).default)
+router.get('/api/pixelActivity', (await import('./controllers/api/pixel/show10.js')).default)
+
+// API | messages
+router.get('/api/messageActivity', (await import('./controllers/api/messages/show10.js')).default)
 
 // API | NOT FOUND
 router.use('/api', (await import('./controllers/api/not-found.js')).default)

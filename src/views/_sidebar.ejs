@@ -10,7 +10,7 @@
   </div>
   <div class="offcanvas-body">
 
-    <ul id="messages"></ul>
+    <ul id="activityLog"></ul>
     <form id="comment" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
     </form>
@@ -42,18 +42,77 @@
     }
   })
 
-  socket.on('chat message', function (msg, user) {
-    var item = document.createElement('li')
-    item.textContent = `${user.data.username}: ` + msg
-    messages.appendChild(item)
+  socket.on('chat message', function (msg, user, timeStamp) {
+    var receivedMessage = document.createElement('li')
+    receivedMessage.style.color = "#303030"
+    receivedMessage.textContent = `${user.data.username}: ${msg} (${(moment(timeStamp).fromNow())})`
+    activityLog.appendChild(receivedMessage)
     window.scrollTo(0, document.body.scrollHeight)
   })
 
   socket.on('pixel updated', async (pixelData, color, currentUser, timeStamp) => {
+    console.log(timeStamp)
     var update = document.createElement('li')
-    update.textContent = `${currentUser.user.username}: Pixel X:${pixelData.x} Y:${pixelData.y} changed to ${color}`
-    messages.appendChild(update)
+    update.style.color = "#A9A9A9"
+    update.textContent = `${currentUser.user.username} changed pixel (x:${pixelData.x} y:${pixelData.y}) to ${color} (${(moment(timeStamp).fromNow())})`
+    activityLog.appendChild(update)
     window.scrollTo(0, document.body.scrollHeight)
   })
 
+
+  const generateMessageActivity = ({ messageActivities }) => {
+    console.log(new Date(messageActivities[0].timeStamp))
+    for (let index = 3; index > 0; index--) {
+      var receivedMessage = document.createElement('li')
+      receivedMessage.style.color = "#303030"
+      receivedMessage.textContent = `${messageActivities[index].user.username}: ${messageActivities[index].message} (${(moment(messageActivities[index].timeStamp).fromNow())})`
+      activityLog.appendChild(receivedMessage)
+      window.scrollTo(0, document.body.scrollHeight)
+    }
+  }
+
+  const generatePixelsActivity = ({ pixelActivities }) =>{
+    //console.log({ pixelActivities })
+    for (let index = 10; index > 0; index--) {
+      var update = document.createElement('li')
+      update.style.color = "#A9A9A9"
+      //console.log(update)
+      //update.innerHTML(`style:'color: blue'`)
+      update.textContent = `${pixelActivities[index].user.username} changed pixel (x:${pixelActivities[index].x} y:${pixelActivities[index].y}) to ${pixelActivities[index].RGB} (${(moment(pixelActivities[index].timeStamp).fromNow())})`
+      activityLog.appendChild(update)
+      window.scrollTo(0, document.body.scrollHeight)
+    }
+  }
+
+  const messageActivity = async () => {
+      console.log('page updated')
+      axios({
+        method: 'GET',
+        url: '/api/messageActivity'
+      }).then((resp) => {
+        var messageActivities = resp.data
+        //console.log(pixelActivities[0])
+        generateMessageActivity({ messageActivities })
+      })
+    }
+
+  const pixelActivity = async () => {
+    console.log('page updated')
+    axios({
+      method: 'GET',
+      url: '/api/pixelActivity'
+    }).then((resp) => {
+      var pixelActivities = resp.data
+      //console.log(pixelActivities[0])
+      generatePixelsActivity({ pixelActivities })
+    })
+  }
+
+
+
+  $(document).ready(() => {
+    //getComments()
+    messageActivity()
+    pixelActivity()
+  })
 </script>
