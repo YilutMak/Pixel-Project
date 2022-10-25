@@ -8,7 +8,7 @@ Is the user signed in?//done
       show pixel taken modal//done
     if pixel is not taken//done
       show pixel edit modal//done
-      update color entry in database
+      update color entry in database//done
       show pixel taken modal (show time remaining)//done
 
 backend
@@ -20,3 +20,7 @@ get pixel users
 highlight pixels
 
 dropdb -f pixel_project
+
+100 press in 50 sec
+2 press every sec
+300,000 in 150,000sec(2500mins)(42hrs)

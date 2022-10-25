@@ -2,6 +2,13 @@
 <%- contentFor('scripts') %>
 <script>
 var socket = io();
+let currentPixel
+let user
+let pixelData
+let coolDown = 0
+let currentUser
+let previousColor
+
 
 const generateTitle = () => {
   return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
@@ -45,7 +52,7 @@ const generateCanvas = ({ isLoading, pixels }) => {
           <div class="modal-body">
             <div class="container">
               <label for="colorpicker">Choose pixel color:</label>
-              <input type="color" id="colorpicker" value="#000000">
+              <input type="color" id="colorpicker" value="${previousColor? previousColor :"#000000" }">
             </div>
           </div>
           <div class="modal-footer">
@@ -91,27 +98,15 @@ const generateCanvas = ({ isLoading, pixels }) => {
   `
 }
 
-  generatePixelTakenModal = (pixelData , timeLeft) => {
-    return `
-
-    `
-  }
-
-let currentPixel
-let user
-let pixelData
-let coolDown =30
-let currentUser
-
 const generatePage = async(info) => {
   const $page = $('#pages-Pixel-index')
-  const $title = await generateTitle(info)
-  const $canvas = await generateCanvas(info)
+  const $title = generateTitle(info)
+  const $canvas = generateCanvas(info)
   $page.html('').append($title).append($canvas)
   console.log('page generated')
 }
 
-const getPixels = () => {
+const getPixels = async() => {
   console.log('page updated')
   axios({
         method: 'GET',
@@ -230,6 +225,7 @@ const handleModalConfirm = (e) => {
   console.log('confirm')
   const colorHex = $('#colorpicker')
   const color = colorHex.val()
+  previousColor = color
 
   //console.log(currentPixel)
   //console.log(currentUser)
@@ -275,9 +271,11 @@ const handleModalConfirm = (e) => {
     }
   //$(currentPixel).css("background-color", colorHex.val())
 
+
   const $pixelTakenModal = $('#pixel-taken-modal')
   $pixelTakenModal.html('').append($pixelUpdatedInfo(username, timeLeft, color))
   $("#pixel-taken-modal").modal('show')
+  console.log('modal added')
   })
 }
 

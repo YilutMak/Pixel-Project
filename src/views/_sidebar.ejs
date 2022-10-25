@@ -49,4 +49,11 @@
     window.scrollTo(0, document.body.scrollHeight)
   })
 
+  socket.on('pixel updated', async (pixelData, color, currentUser, timeStamp) => {
+    var update = document.createElement('li')
+    update.textContent = `${currentUser.user.username}: Pixel X:${pixelData.x} Y:${pixelData.y} changed to ${color}`
+    messages.appendChild(update)
+    window.scrollTo(0, document.body.scrollHeight)
+  })
+
 </script>
