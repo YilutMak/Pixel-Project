@@ -11,6 +11,7 @@ import * as http from 'http'
 import * as SocketIO from 'socket.io'
 import parseData from './src/_middlewares/parse-data.js'
 import MessagesHandlers from './src/handlers/messages/messagesHandler.js'
+import CanvasHandlers from './src/handlers/canvas/canvasHandler.js'
 
 const app = express() // The instance that "host" our server
 const port = process.env.PORT || 3000 // The port number our server runs on
@@ -65,6 +66,7 @@ app.use('/', (await import('./src/routes.js')).default)
 
 const onConnection = (socket) => {
   MessagesHandlers(io, socket)
+  CanvasHandlers(io, socket)
 }
 
 io.on('connection', onConnection)

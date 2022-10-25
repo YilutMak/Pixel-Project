@@ -1,6 +1,8 @@
 <%- contentFor('styles') %>
 <%- contentFor('scripts') %>
 <script>
+var socket = io();
+
 const generateTitle = () => {
   return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
 }
@@ -8,6 +10,8 @@ const generateTitle = () => {
 const generateCanvas = ({ isLoading, pixels }) => {
   if (isLoading) return `<div class="text-center mb-3">Loading...</div>`
   return `
+    <div id="pixel-taken-modal" class="modal" tabindex="-1" role="dialog">
+    </div>
 
     <div id="sign-in-modal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered" role="document">
@@ -41,7 +45,7 @@ const generateCanvas = ({ isLoading, pixels }) => {
           <div class="modal-body">
             <div class="container">
               <label for="colorpicker">Choose pixel color:</label>
-              <input type="color" id="colorpicker" value="#0000ff">
+              <input type="color" id="colorpicker" value="#000000">
             </div>
           </div>
           <div class="modal-footer">
@@ -89,41 +93,26 @@ const generateCanvas = ({ isLoading, pixels }) => {
 
   generatePixelTakenModal = (pixelData , timeLeft) => {
     return `
-      <div id="pixel-taken-modal" class="modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title">This pixel is occupied!</h5>
-              <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-            <div class="modal-body">
-              <p>Pixel created: <b>${pixelData.user.username}</b> </p>
-              <p>Unlocks in: <b>${timeLeft} mins</b> </p>
-            </div>
-            <div class="modal-footer">
-              <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
+
     `
   }
 
 let currentPixel
 let user
 let pixelData
-let coolDown = 400
+let coolDown =30
+let currentUser
 
-const generatePage = (info) => {
+const generatePage = async(info) => {
   const $page = $('#pages-Pixel-index')
-  const $title = generateTitle(info)
-  const $canvas = generateCanvas(info)
+  const $title = await generateTitle(info)
+  const $canvas = await generateCanvas(info)
   $page.html('').append($title).append($canvas)
+  console.log('page generated')
 }
 
 const getPixels = () => {
+  console.log('page updated')
   axios({
         method: 'GET',
         url: '/api/pixels'
@@ -140,6 +129,7 @@ const getMyProfileIndex = () => {
     url: '/api/my/profile',
   }).then((resp) => {
     user = { user: resp.data }
+    currentUser = { user: resp.data }
     console.log("signed in")
   }).catch(() => {
     user = null
@@ -173,34 +163,53 @@ const handlePixelClick = (e) => {
   //console.log(xCoord)
   //console.log(yCoord)
 
+const $pixelTakenInfo = (pixelData, timeLeft) => {
+  return `
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">This pixel is occupied!</h5>
+            <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="pixel-taken-body" class="modal-body">
+            <p> Pixel created: <b>${pixelData.user.username}</b> </p>
+            <p>Color:
+              <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>  </p>
+            <p>Unlocks in: <b>${timeLeft} mins</b> </p>
+          </div>
+          <div class="modal-footer">
+            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+  `
+}
 
 const pixelPress = async() => {
   await getPixel(xCoord, yCoord)
   //console.log(pixelData.x)
   //console.log(pixelData.y)
-  console.log(pixelData.timeStamp)
+  //console.log(pixelData.timeStamp)
   const timeCreated = (Math.floor((new Date(pixelData.timeStamp)) / 1000))/60
   const currentTime = (Math.floor((Date.now()) / 1000))/60
-  console.log(timeCreated)
-  console.log(currentTime)
+  //console.log(timeCreated)
+  //console.log(currentTime)
   //console.log(Math.floor(currentTime-timeCreated))
 
   if (currentTime - timeCreated > coolDown) {
-    $("#color-modal").modal('show')
     if (user) {
       $("#color-modal").modal('show')
     } else {
       $("#sign-in-modal").modal('show')
     }
   }else{
-    const $page = $('#pages-Pixel-index')
     //console.log(pixelData)
-    const timeLeft = coolDown - (currentTime - timeCreated)
-    console.log(timeLeft)
-    const $takenModal = $(generatePixelTakenModal(pixelData , timeLeft))
-    //console.log($takenModal)
-    //console.log($page.html())
-    $page.append($takenModal)
+    const timeLeft = Math.floor(coolDown - (currentTime - timeCreated))
+    //console.log(timeLeft)
+    const $pixelTakenModal = $('#pixel-taken-modal')
+    $pixelTakenModal.html('').append($pixelTakenInfo(pixelData,timeLeft))
     $("#pixel-taken-modal").modal('show')
   }
 }
@@ -220,10 +229,56 @@ const handleModalConfirm = (e) => {
   e.preventDefault()
   console.log('confirm')
   const colorHex = $('#colorpicker')
-  //console.log(colorHex.val())
+  const color = colorHex.val()
+
   //console.log(currentPixel)
-  $(currentPixel).css("background-color", colorHex.val())
-  $("#color-modal").modal('hide')
+  //console.log(currentUser)
+  //console.log(pixelData)
+  //console.log(color)
+
+  socket.emit('pixel update', pixelData, color, currentUser)
+
+
+  socket.on('pixel updated', async(pixelData, color, currentUser, timeStamp) => {
+    await getPixels()
+    $("#color-modal").modal('hide')
+    const username = currentUser.user.username
+    await getPixel(pixelData.x, pixelData.y)
+    //console.log(pixelData)
+    const updateTime = (Math.floor((new Date(timeStamp)) / 1000) / 60 )
+    const currentTime = (Math.floor((Date.now()) / 1000)) / 60
+    timeLeft = Math.floor(coolDown - (currentTime - updateTime))
+    console.log('time left:', timeLeft)
+
+    $pixelUpdatedInfo = (username, timeLeft, color) => {
+      return `
+        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Pixel successfully painted!</h5>
+            <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div id="pixel-taken-body" class="modal-body">
+            <p> Pixel created: <b>${username}</b> </p>
+            <p>Color:
+              <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${color}; Width:30px; height:30px"></div></p>
+            <p>Unlocks in: <b>${timeLeft} mins </b> </p>
+          </div>
+          <div class="modal-footer">
+            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+      `
+    }
+  //$(currentPixel).css("background-color", colorHex.val())
+
+  const $pixelTakenModal = $('#pixel-taken-modal')
+  $pixelTakenModal.html('').append($pixelUpdatedInfo(username, timeLeft, color))
+  $("#pixel-taken-modal").modal('show')
+  })
 }
 
 
