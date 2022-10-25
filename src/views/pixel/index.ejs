@@ -5,7 +5,7 @@ var socket = io();
 let currentPixel
 let user
 let pixelData
-let coolDown = 0
+let coolDown = 30
 let currentUser
 let previousColor
 
@@ -49,11 +49,12 @@ const generateCanvas = ({ isLoading, pixels }) => {
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <div class="container">
+          <div id="color-modal-info" class="modal-body">
+
+          </div>
+          <div id='color-modal-color' class="container">
               <label for="colorpicker">Choose pixel color:</label>
-              <input type="color" id="colorpicker" value="${previousColor? previousColor :"#000000" }">
-            </div>
+              <input type="color" id="colorpicker" value="${previousColor ? previousColor : "#000000" }">
           </div>
           <div class="modal-footer">
             <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
@@ -79,6 +80,13 @@ const generateCanvas = ({ isLoading, pixels }) => {
                     id="x-${x}-y-${y}"
                     data-x="${x}"
                     data-y="${y}"
+                    data-toggle="popover"
+                    data-placement="top"
+                    data-content="information"
+                    data-bs-container="body"
+                    data-bs-toggle="popover"
+                    data-bs-placement="top"
+                    data-bs-content="pixel information"
                     class="pixel-col p-0"
                     style="
                       background-color: ${col.RGB};
@@ -86,7 +94,8 @@ const generateCanvas = ({ isLoading, pixels }) => {
                       height: 9px;
                       border: .1px solid #C8C8C8;
                     "
-                  ></div>
+                  >
+                  </div>
                 `
           }).join('')
             }
@@ -158,6 +167,14 @@ const handlePixelClick = (e) => {
   //console.log(xCoord)
   //console.log(yCoord)
 
+  const $pixelInfo = (pixelData) => {
+    return`
+    <p>Previous color:</p>
+    <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>
+    <button id="color-copy" type="button" class="btn btn-primary" data-color="${pixelData.RGB}"">Copy color</button>
+    `
+  }
+
   const $pixelTakenInfo = (pixelData, timeLeft) => {
     return `
           <div class="modal-dialog modal-dialog-centered" role="document">
@@ -170,9 +187,12 @@ const handlePixelClick = (e) => {
             </div>
             <div id="pixel-taken-body" class="modal-body">
               <p> Pixel created: <b>${pixelData.user.username}</b> </p>
-              <p>Color:
-                <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>  </p>
-              <p>Unlocks in: <b>${timeLeft} mins</b> </p>
+                </div>
+                <p>Color:</p>
+                <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>
+                <button id="color-copy" type="button" class="btn btn-primary" data-color="${pixelData.RGB}"">Copy color</button>
+                <p>Unlocks in: <b>${timeLeft} mins</b> </p>
+              </div>
             </div>
             <div class="modal-footer">
               <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -195,6 +215,10 @@ const handlePixelClick = (e) => {
 
     if (currentTime - timeCreated > coolDown) {
       if (user) {
+
+        const $pixelColorModal = $("#color-modal-info")
+        console.log(pixelData.RGB)
+        $pixelColorModal.html('').append($pixelInfo(pixelData))
         $("#color-modal").modal('show')
       } else {
         $("#sign-in-modal").modal('show')
@@ -205,6 +229,7 @@ const handlePixelClick = (e) => {
       //console.log(timeLeft)
       const $pixelTakenModal = $('#pixel-taken-modal')
       $pixelTakenModal.html('').append($pixelTakenInfo(pixelData,timeLeft))
+
       $("#pixel-taken-modal").modal('show')
     }
   }
@@ -282,14 +307,58 @@ const handleModalConfirm = (e) => {
   })
 }
 
-const handleMouseHover = (e) => {
+const copyColorClick = (e) => {
   e.preventDefault()
-  $('.pixel-col').css("border", '.1px solid #C8C8C8')
+  //console.log('copied')
   const $elem = $(e.currentTarget)
   console.log($elem)
-  $elem.css("border", '3px solid #D2042D')
+  console.log($elem.data('color'))
+  previousColor = $elem.data('color')
+  const $pixelColor = $("#color-modal-color")
 
+  const $currentColor = () => {
+    return `
+    <label for="colorpicker">Choose pixel color:</label>
+    <input type="color" id="colorpicker" value="${previousColor ? previousColor : "#000000"}">
+    `
+  }
+
+  $pixelColor.html('').append($currentColor())
 }
+
+const MouseHover = (e) => {
+  //data-bs-content
+  $('.pixel-col').hover(
+    function () {
+      //const xCoord = $(this).data('x')
+      //const yCoord = $(this).data('y')
+      //getPixel(xCoord, yCoord)
+      //console.log(pixelData)
+
+      //$(this).popover('show')
+      $(this).css("border", '3px solid #D2042D')
+
+    },
+    function () {
+      //$(this).popover('hide')
+      $(this).css("border", '.1px solid #C8C8C8')
+    }
+  )
+}
+
+
+//const MouseHoverUsername = () => {
+  //console.log('hover')
+//}
+
+
+//$(".pixel-col").on({
+//  function () { $(this).css("border", '3px solid #D2042D') },
+//  function () { $(this).css("border", '.1px solid #C8C8C8') }
+//})
+
+
+
 
 $(document).ready(() => {
   generatePage({ isLoading: true })
@@ -298,7 +367,9 @@ $(document).ready(() => {
   $('#pages-Pixel-index').on('click', '.pixel-col', handlePixelClick)
   $('#pages-Pixel-index').on('click', '#modal-close', handleModalClick)
   $('#pages-Pixel-index').on('click', '#confirm', handleModalConfirm)
-  $('#pages-Pixel-index').on('mouseover', '.pixel-col', handleMouseHover)
+  $('#pages-Pixel-index').on('click', '#color-copy', copyColorClick)
+  $('#pages-Pixel-index').on('mouseover', '.pixel-col', MouseHover)
+  //$('#pages-Pixel-index').on('mouseover', '#navbar-username', MouseHoverUsername)
 })
 
 
