@@ -177,7 +177,7 @@ const handlePixelClick = (e) => {
 
   const $pixelTakenInfo = (pixelData, timeLeft) => {
     return `
-          <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title">This pixel is occupied!</h5>
@@ -185,18 +185,22 @@ const handlePixelClick = (e) => {
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
+
             <div id="pixel-taken-body" class="modal-body">
-              <p> Pixel created: <b>${pixelData.user.username}</b> </p>
-                </div>
-                <p>Color:</p>
-                <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>
-                <button id="color-copy" type="button" class="btn btn-primary" data-color="${pixelData.RGB}"">Copy color</button>
-                <p>Unlocks in: <b>${timeLeft} mins</b> </p>
-              </div>
+                <p> Pixel created: <b>${pixelData.user.username}</b> </p>
             </div>
+
+            <div>
+              <p>Color:</p>
+              <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px;height:30px"></div>
+              <button id="color-copy" type="button" class="btn btn-primary" data-color="${pixelData.RGB}"">Copy color</button>
+              <p>Unlocks in: <b>${timeLeft} mins</b> </p>
+            </div>
+
             <div class="modal-footer">
               <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
+
           </div>
         </div>
     `
@@ -345,20 +349,6 @@ const MouseHover = (e) => {
     }
   )
 }
-
-
-//const MouseHoverUsername = () => {
-  //console.log('hover')
-//}
-
-
-//$(".pixel-col").on({
-//  function () { $(this).css("border", '3px solid #D2042D') },
-//  function () { $(this).css("border", '.1px solid #C8C8C8') }
-//})
-
-
-
 
 $(document).ready(() => {
   generatePage({ isLoading: true })

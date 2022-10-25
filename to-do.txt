@@ -25,3 +25,14 @@ get pixel users
 highlight pixels
 
 dropdb -f pixel_project
+
+
+//const MouseHoverUsername = () => {
+  //console.log('hover')
+//}
+
+
+//$(".pixel-col").on({
+//  function () { $(this).css("border", '3px solid #D2042D') },
+//  function () { $(this).css("border", '.1px solid #C8C8C8') }
+//})
