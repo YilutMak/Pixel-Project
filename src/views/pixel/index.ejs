@@ -238,8 +238,16 @@ const handlePixelClick = (e) => {
         console.log(pixelData.RGB)
         $pixelColorModal.html('').append($pixelInfo(pixelData))
         $("#color-modal").modal('show')
+        $("#color-modal").keyup(function (event) {
+          var keycode = (event.keyCode ? event.keyCode : event.which);
+          if (keycode == '13') {
+            console.log('enter')
+            handleModalConfirm(e)
+          }
+        })
       } else {
         $("#sign-in-modal").modal('show')
+
       }
     }else{
       //console.log(pixelData)
@@ -378,6 +386,7 @@ $(document).ready(() => {
   $('#pages-Pixel-index').on('click', '#confirm', handleModalConfirm)
   $('#pages-Pixel-index').on('click', '#color-copy', copyColorClick)
   $('#pages-Pixel-index').on('mouseover', '.pixel-col', MouseHover)
+
   //$('#pages-Pixel-index').on('mouseover', '#navbar-username', MouseHoverUsername)
 })
 
