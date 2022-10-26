@@ -133,6 +133,7 @@ const getMyProfileIndex = () => {
     url: '/api/my/profile',
   }).then((resp) => {
     user = { user: resp.data }
+    myUser = { user: resp.data }
     currentUser = { user: resp.data }
     console.log("signed in")
   }).catch(() => {
@@ -306,7 +307,9 @@ const handleModalConfirm = (e) => {
 
   const $pixelTakenModal = $('#pixel-taken-modal')
   $pixelTakenModal.html('').append($pixelUpdatedInfo(username, timeLeft, color))
-  if(UserTrigger.user.username === currentUser.user.username){
+  getMyProfileIndex()
+  console.log(myUser)
+  if(UserTrigger.user.username === myUser.user.username){
     $("#pixel-taken-modal").modal('show')
   }
   console.log('modal added')
