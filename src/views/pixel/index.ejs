@@ -8,6 +8,7 @@ let pixelData
 let coolDown = 30
 let currentUser
 let previousColor
+let enterPress =true
 
 
 const generateTitle = () => {
@@ -241,10 +242,13 @@ const handlePixelClick = (e) => {
         $pixelColorModal.html('').append($pixelInfo(pixelData))
         $("#color-modal").modal('show')
         $("#color-modal").keyup(function (event) {
-          var keycode = (event.keyCode ? event.keyCode : event.which);
-          if (keycode == '13') {
-            console.log('enter')
-            handleModalConfirm(e)
+          if (enterPress == true) {
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+            if (keycode == '13') {
+              console.log('enter')
+              enterPress=false
+              handleModalConfirm(e)
+            }
           }
         })
       } else {
@@ -293,6 +297,7 @@ const handleModalConfirm = (e) => {
     $updatingPixel.css("background-color", color)
 
     $("#color-modal").modal('hide')
+    enterPress = true
     const username = UserTrigger.user.username
     await getPixel(pixelData.x, pixelData.y)
     //console.log(pixelData)

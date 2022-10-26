@@ -16,7 +16,6 @@ backend
 -display comments
 
 questions to ask
--how to host on hiroku
 -how to que updates on pixels
 -how come pixel border cannot be smaller
 
@@ -39,6 +38,5 @@ dropdb -f pixel_project
 
 
 bugs fix needed:
-notifications are not updating
 pixels are not updating
 navbar toggle icon color
