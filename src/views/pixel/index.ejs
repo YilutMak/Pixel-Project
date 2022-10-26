@@ -5,7 +5,7 @@ var socket = io();
 let currentPixel
 let user
 let pixelData
-let coolDown = 0
+let coolDown = 30
 let currentUser
 let previousColor
 
@@ -32,14 +32,14 @@ const generateCanvas = ({ isLoading, pixels }) => {
     <div id="sign-in-modal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
-          <div class="modal-header">
-            <h4 class="modal-title">Sign in required</h4>
+          <div class="modal-header mb-0 p-3">
+            <h4 class="modal-title-signin">Sign in required</h4>
             <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span class="text-center" aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-primary" onclick="window.location.href='/auth/login';">
+            <button id="sign-in" type="button" class="btn btn-primary" onclick="window.location.href='/auth/login';">
               log in
             </button>
             <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -63,7 +63,7 @@ const generateCanvas = ({ isLoading, pixels }) => {
           </div>
 
           <div id='color-modal-color' class="container d-flex justify-content-center">
-              <label for="colorpicker">Choose your pixel color:</label>
+              <label id="choose-your-pixel" for="colorpicker">Choose your pixel color:</label>
               <input type="color" id="colorpicker" value="${previousColor ? previousColor : "#000000" }">
           </div>
 
@@ -192,26 +192,28 @@ const handlePixelClick = (e) => {
   const $pixelTakenInfo = (pixelData, timeLeft) => {
     return `
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
+          <div class="modal-content d-flex text-center justify-content-center"">
             <div class="modal-header">
-              <h4 class="modal-title">This pixel is occupied!</h4>
+              <h4 class="modal-title-occupied">This pixel is occupied!</h4>
               <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
 
             <div id="pixel-taken-body" class="modal-body">
-                <p> Pixel created: <b>${pixelData.user.username}</b> </p>
+                <p class="mb-2 mt-2"> Pixel created: <b id="user">${pixelData.user.username}</b> </p>
             </div>
 
             <div>
-              <p>Color:</p>
-              <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px;height:30px"></div>
-              <button id="color-copy" type="button" class="btn btn-primary" data-color="${pixelData.RGB}"">Copy color</button>
-              <p>Unlocks in: <b>${timeLeft} mins</b> </p>
+              <div class="d-flex justify-content-center align-items-center text-center">
+                <p id="pixel-color" class="mb-0">Pixel color:</p>
+                <div id="color-box" class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px;height:30px"></div>
+                <button id="color-copy" type="button" class="btn btn-primary" data-color="${pixelData.RGB}"">Copy color</button>
+              </div>
+              <p class="mb-2 mt-2" id="unlocks-in">Unlocks in: <b id="timeleft">${timeLeft} mins</b> </p>
             </div>
 
-            <div class="modal-footer">
+            <div class="modal-footer p-1">
               <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
 
@@ -262,8 +264,7 @@ const handlePixelClick = (e) => {
   pixelPress(xCoord, yCoord)
 }
 
-const handleModalClick = (e) => {
-  e.preventDefault()
+const handleModalClose = (e) => {
   console.log('closed')
   //console.log($(e.target).parents(".modal"))
   //$("#color-modal").modal('hide')
@@ -302,21 +303,24 @@ const handleModalConfirm = (e) => {
 
     $pixelUpdatedInfo = (username, timeLeft, color) => {
       return `
-        <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content d-flex text-center justify-content-center">
           <div class="modal-header">
             <h4 class="modal-title-painted">Pixel successfully painted!</h4>
             <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
+
           <div id="pixel-taken-body" class="modal-body">
-            <p> Pixel created: <b>${username}</b> </p>
-            <p>Color:
-              <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${color}; Width:30px; height:30px"></div></p>
-            <p>Unlocks in: <b>${timeLeft} mins </b> </p>
-          </div>
-          <div class="modal-footer">
+            <p class="mb-2 mt-2"> Pixel created by: <b id="user">${username}</b> </p>
+            <div class="d-flex justify-content-center align-items-center text-center">
+              <p class="mb-0">Color painted:</p>
+                <div id="color-box" class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${color}; Width:30px; height:30px"></div>
+            </div>
+            <p class="mt-2">Unlocks in: <b id="timeleft">${timeLeft} mins </b> </p>
+
+          <div class="modal-footer p-1">
             <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
@@ -381,12 +385,11 @@ $(document).ready(() => {
   getPixels()
   getMyProfileIndex()
   $('#pages-Pixel-index').on('click', '.pixel-col', handlePixelClick)
-  $('#pages-Pixel-index').on('click', '#modal-close', handleModalClick)
-  $('#pages-Pixel-index').on('click', '#modal-close-bottom', handleModalClick)
+  $('#pages-Pixel-index').on('click', '#modal-close', handleModalClose)
+  $('#pages-Pixel-index').on('click', '#modal-close-bottom', handleModalClose)
   $('#pages-Pixel-index').on('click', '#confirm', handleModalConfirm)
   $('#pages-Pixel-index').on('click', '#color-copy', copyColorClick)
   $('#pages-Pixel-index').on('mouseover', '.pixel-col', MouseHover)
-
   //$('#pages-Pixel-index').on('mouseover', '#navbar-username', MouseHoverUsername)
 })
 

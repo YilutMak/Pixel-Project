@@ -19,7 +19,17 @@ const signupSchema = yup.object({
   }),
   password: yup.string().min(6).required(),
   passwordConfirmation: yup.string().oneOf([yup.ref('password'), null], 'Passwords must match').required(),
-  username: yup.string().required()
+  username: yup.string().required().test({
+    message: () => 'Username already exists',
+    test: async (value) => {
+      try {
+        await prisma.user.findUnique({ where: { username: value }, rejectOnNotFound: true })
+        return false
+      } catch (err) {
+        return true
+      }
+    }
+  })
 })
 
 const controllersApiAuthSignup = async (req, res) => {

@@ -7,7 +7,7 @@ const generateForm = ({ user, errors } = {}) => {
       <div id="form-wrapper" class="col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
         <form id="login-form">
           <div class="mb-3">
-            <label for="user-email" class="form-label">Email</label>
+            <label id="user-login" for="user-email" class="form-label">Email</label>
             <input
               id="user-email"
               class="form-control ${errors?.email && 'is-invalid'}"
@@ -19,7 +19,7 @@ const generateForm = ({ user, errors } = {}) => {
           </div>
 
           <div class="mb-3">
-            <label for="user-password" class="form-label">Password</label>
+            <label id="user-login" for="user-password" class="form-label">Password</label>
             <input
               id="user-password"
               class="form-control ${errors?.password && 'is-invalid'}"
@@ -30,7 +30,7 @@ const generateForm = ({ user, errors } = {}) => {
             <div class="invalid-feedback">${errors?.password || ''}</div>
           </div>
 
-          <button class="btn btn-primary" type="submit">Submit</button>
+          <button id="submit" class="btn btn-primary" type="submit">Submit</button>
         </form>
       </div>
     </div>
@@ -39,7 +39,7 @@ const generateForm = ({ user, errors } = {}) => {
 
 const generatePage = (info) => {
   const $page = $('#pages-auth-login')
-  const $title = '<h1 class="text-center">Login</h1>'
+  const $title = '<h1 id="user-login-title" class="text-center">Login</h1>'
   const $form = generateForm(info)
 
   $page.html('').append($title).append($form)

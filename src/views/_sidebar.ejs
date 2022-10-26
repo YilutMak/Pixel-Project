@@ -1,15 +1,15 @@
 
 
 <div id="offcanvas" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
-  <div class="offcanvas-header">
-    <h5 id="offcanvasLeftLabel">Activity & Chat</h5>
+  <div id="offcanvas-header" class="offcanvas-header p-3">
+    <h5 id="offcanvasLeftLabel" class="mb-0">Activity & Chat</h5>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body">
 
     <ul id="activityLog"></ul>
     <form id="comment" action="">
-      <input id="input" autocomplete="off" /><button>Send</button>
+      <input id="input" autocomplete="off" /><button id="send-button" class="px-3">Send</button>
     </form>
 
     <!--<form id="comment" action="" class="mx-0">
@@ -20,8 +20,9 @@
 
 <script>
   let notif = 0
-
-  var socket = io();
+  var socket = io()
+  let messageColor = "#67e0e8"
+  let logColor = "#b2b2b2"
 
   var form = document.getElementById('comment')
   var input = document.getElementById('input')
@@ -41,11 +42,11 @@
 
   socket.on('chat message', function (msg, user, timeStamp) {
     var receivedMessage = document.createElement('li')
-    receivedMessage.style.color = "#303030"
+    receivedMessage.style.color = messageColor
     receivedMessage.textContent = `${user.data.username}: ${msg} (${(moment(timeStamp).fromNow())})`
     activityLog.appendChild(receivedMessage)
     window.scrollTo(0, document.body.scrollHeight)
-    if (!user.data.username === myUser.user.username) {
+    if (user.data.username !== myUser.user.username) {
       notif += 1
       console.log(`notif:${notif}`)
       $('#notif').text(notif)
@@ -55,11 +56,11 @@
   socket.on('pixel updated', async (pixelData, color, currentUser, timeStamp) => {
     console.log(timeStamp)
     var update = document.createElement('li')
-    update.style.color = "#A9A9A9"
+    update.style.color = logColor
     update.textContent = `${currentUser.user.username} changed pixel (x:${pixelData.x} y:${pixelData.y}) to ${color} (${(moment(timeStamp).fromNow())})`
     activityLog.appendChild(update)
     window.scrollTo(0, document.body.scrollHeight)
-    if(!currentUser.user.username === myUser.user.username){
+    if(currentUser.user.username !== myUser.user.username){
       notif += 1
       console.log(`notif:${notif}`)
       $('#notif').text(notif)
@@ -71,7 +72,7 @@
     console.log(new Date(messageActivities[0].timeStamp))
     for (let index = 3; index > 0; index--) {
       var receivedMessage = document.createElement('li')
-      receivedMessage.style.color = "#303030"
+      receivedMessage.style.color = messageColor
       receivedMessage.textContent = `${messageActivities[index].user.username}: ${messageActivities[index].message} (${(moment(messageActivities[index].timeStamp).fromNow())})`
       activityLog.appendChild(receivedMessage)
       window.scrollTo(0, document.body.scrollHeight)
@@ -82,7 +83,7 @@
     //console.log({ pixelActivities })
     for (let index = 10; index > 0; index--) {
       var update = document.createElement('li')
-      update.style.color = "#A9A9A9"
+      update.style.color = logColor
       //console.log(update)
       //update.innerHTML(`style:'color: blue'`)
       update.textContent = `${pixelActivities[index].user.username} changed pixel (x:${pixelActivities[index].x} y:${pixelActivities[index].y}) to ${pixelActivities[index].RGB} (${(moment(pixelActivities[index].timeStamp).fromNow())})`

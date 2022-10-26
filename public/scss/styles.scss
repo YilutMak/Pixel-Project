@@ -7,7 +7,7 @@ html * {
 }
 
 #comment {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(216, 216, 216, 0.284);
   display: flex;
   position: absolute;
   bottom: 0;
@@ -26,9 +26,23 @@ html * {
   margin: 0.25rem;
 }
 
+#send-button {
+  border-radius: 22px !important;
+  background: #ebb000!important;
+}
+
 #input:focus {
   outline: none;
 }
+
+#offcanvas-header{
+  background: #ecc54f;
+}
+
+#offcanvasLeftLabel {
+  color: rgb(255, 255, 255);
+}
+
 
 #comment>button {
   background: #333;
@@ -127,28 +141,33 @@ color: rgb(255, 255, 255);
 
 #pixel-canvas-intro{
   color: rgb(137, 137, 137)!important;
+  width: 830px;
 }
 
 .info-spacer{
-width: 30%;
+width: 50%;
 }
 
 .modal-title{
   margin-left: 34%;
+  color: rgb(255, 197, 6);
 }
 
 .modal-title-painted {
   margin-left: 21%;
   margin-bottom: 0px;
+  color: rgb(255, 197, 6);
 }
 
 
 #previous-color{
   margin-bottom: 10px;
+  color: rgb(137, 137, 137) !important;
 }
 
 #color-box {
   margin-right: 10px;
+  margin-left: 10px;
   border: 3px solid #7a7a7a!important;
 }
 
@@ -181,9 +200,84 @@ width: 30%;
 }
 
 #confirm{
-  background-color: #45ba5b;
-  border-color: #3c904b;
+  background-color: #aeda2f;
+  border-color: #98bc2d;
+}
+
+#pixel-taken-body{
+  margin: 0px;
+  padding: 0px;
+  color: rgb(137, 137, 137) !important;
+}
+
+//d-flex justify-content-center align-items-center
+
+#choose-your-pixel{
+  color: rgb(137, 137, 137) !important;
+}
+
+#modal-close-bottom {
+  background-color: #b6b9bc;
+  border-color: #9ea0a3;
 }
 
 
-//d-flex justify-content-center align-items-center
+#user{
+  color: #0ad3df !important;
+}
+
+#timeleft {
+  color: #ff6d9b !important;
+}
+
+
+.modal-title-occupied {
+  margin-left: 26%;
+  color: rgb(255, 197, 6);
+  margin-bottom: 0px;
+}
+
+#pixel-color{
+  color: rgb(137, 137, 137) !important;
+}
+
+
+#unlocks-in {
+  color: rgb(137, 137, 137) !important;
+}
+
+
+.modal-title-signin {
+  margin-left: 32%;
+  color: rgb(255, 197, 6);
+}
+
+#sign-in{
+  background-color: #aeda2f;
+  border-color: #98bc2d;
+}
+
+#submit{
+  background-color: #aeda2f;
+  border-color: #98bc2d;
+}
+
+#user-login{
+  color: rgb(137, 137, 137)!important;
+}
+
+#user-login-title {
+  color: #ffc506 !important;
+}
+
+#user-signup {
+  color: rgb(137, 137, 137) !important;
+}
+
+#user-signup-title {
+  color: #ffc506 !important;
+}
+
+#pixel-wrapper{
+  margin-bottom: 100px;
+}

@@ -39,5 +39,6 @@ dropdb -f pixel_project
 
 
 bugs fix needed:
-chat box covering messages
-comment button is not showing
+notifications are not updating
+pixels are not updating
+navbar toggle icon color
