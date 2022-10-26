@@ -17,7 +17,8 @@ const CanvasHandlers = (io, socket) => {
     // console.log(msg, user)
     pixelUpdate(pixelData, color, currentUser)
     const timeStamp = new Date(Date.now())
-    io.emit('pixel updated', pixelData, color, currentUser, timeStamp)
+    const UserTrigger = currentUser
+    io.emit('pixel updated', pixelData, color, UserTrigger, timeStamp)
   }
 
   socket.on('pixel update', receivePixel)

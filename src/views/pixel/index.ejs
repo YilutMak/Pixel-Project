@@ -263,14 +263,14 @@ const handleModalConfirm = (e) => {
   socket.emit('pixel update', pixelData, color, currentUser)
 
 
-  socket.on('pixel updated', async(pixelData, color, currentUser, timeStamp) => {
+  socket.on('pixel updated', async(pixelData, color, UserTrigger, timeStamp) => {
     console.log(pixelData)
     console.log($(`#x-${pixelData.x}-y-${pixelData.y}`))
     const $updatingPixel = $(`#x-${pixelData.x}-y-${pixelData.y}`)
     $updatingPixel.css("background-color", color)
 
     $("#color-modal").modal('hide')
-    const username = currentUser.user.username
+    const username = UserTrigger.user.username
     await getPixel(pixelData.x, pixelData.y)
     //console.log(pixelData)
     const updateTime = (Math.floor((new Date(timeStamp)) / 1000) / 60 )
@@ -306,7 +306,9 @@ const handleModalConfirm = (e) => {
 
   const $pixelTakenModal = $('#pixel-taken-modal')
   $pixelTakenModal.html('').append($pixelUpdatedInfo(username, timeLeft, color))
-  $("#pixel-taken-modal").modal('show')
+  if(UserTrigger.user.username === currentUser.user.username){
+    $("#pixel-taken-modal").modal('show')
+  }
   console.log('modal added')
   })
 }
