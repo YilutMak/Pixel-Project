@@ -36,3 +36,8 @@ dropdb -f pixel_project
 //  function () { $(this).css("border", '3px solid #D2042D') },
 //  function () { $(this).css("border", '.1px solid #C8C8C8') }
 //})
+
+
+bugs fix needed:
+chat box covering messages
+comment button is not showing

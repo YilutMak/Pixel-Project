@@ -1,5 +1,11 @@
 @import 'node_modules/bootstrap/scss/bootstrap';
 
+html * {
+  //font-family: Century Gothic !important;
+  //Marker Felt
+  //Bahnschrift Light
+}
+
 #comment {
   background: rgba(0, 0, 0, 0.15);
   display: flex;
@@ -27,7 +33,6 @@
 #comment>button {
   background: #333;
   border: none;
-  padding: 0 1rem;
   margin: 0.25rem;
   border-radius: 3px;
   outline: none;
@@ -68,3 +73,117 @@ a:hover {
 #navbar-toggler-icon{
   background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28255, 255, 255, 0.55%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
 }
+
+body{
+  padding-top: 70px;
+}
+
+#offcanvas-toggle{
+  position: relative;
+  background-color: #ebb000;
+  border-color: #e5b72d;
+}
+
+#offcanvas {
+margin-top: 62px !important
+}
+
+
+#activityLog{
+  padding-bottom: 25px;
+}
+
+#notif{
+  background-color: #ffdc73;
+}
+
+#navbar-brand{
+  font-family: Century Gothic !important;
+  font-size: 18pt;
+}
+
+#navbar-username{
+  color: rgb(255, 255, 255);
+}
+
+#login {
+  color: rgb(255, 255, 255);
+  padding-right: 16px;
+}
+
+#signup {
+  color: rgb(255, 255, 255);
+}
+
+#auth-logout{
+color: rgb(255, 255, 255);
+}
+
+#pixel-canvas-title{
+  color: rgb(255, 197, 6);
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#pixel-canvas-intro{
+  color: rgb(137, 137, 137)!important;
+}
+
+.info-spacer{
+width: 30%;
+}
+
+.modal-title{
+  margin-left: 34%;
+}
+
+.modal-title-painted {
+  margin-left: 21%;
+  margin-bottom: 0px;
+}
+
+
+#previous-color{
+  margin-bottom: 10px;
+}
+
+#color-box {
+  margin-right: 10px;
+  border: 3px solid #7a7a7a!important;
+}
+
+#color-modal-info{
+  margin-top: 0px;
+  padding-top: 10px;
+}
+
+#color-copy{
+  background-color: #e5b72d !important;
+  border-color: #b9952a !important;
+}
+
+#color-modal-color{
+  margin-bottom: 10px;
+}
+
+#modal-close{
+  border-radius: 5px;
+  width: 30px;
+  height: 30px;
+  background-color: #e8e8e8;
+  border-color: #d2d2d2;
+}
+
+#colorpicker{
+  margin-left: 10px;
+  width: 40px;
+  height: 28px;
+}
+
+#confirm{
+  background-color: #45ba5b;
+  border-color: #3c904b;
+}
+
+
+//d-flex justify-content-center align-items-center

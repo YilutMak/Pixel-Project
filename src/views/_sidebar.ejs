@@ -1,9 +1,6 @@
-<button class="button-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasLeft"
-  aria-controls="offcanvasLeft">
-  comment
-</button>
 
-<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel" style="margin-top: 55px">
+
+<div id="offcanvas" class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasLeftLabel">
   <div class="offcanvas-header">
     <h5 id="offcanvasLeftLabel">Activity & Chat</h5>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -22,7 +19,7 @@
 </div>
 
 <script>
-
+  let notif = 0
 
   var socket = io();
 
@@ -48,6 +45,11 @@
     receivedMessage.textContent = `${user.data.username}: ${msg} (${(moment(timeStamp).fromNow())})`
     activityLog.appendChild(receivedMessage)
     window.scrollTo(0, document.body.scrollHeight)
+    if (!user.data.username === myUser.user.username) {
+      notif += 1
+      console.log(`notif:${notif}`)
+      $('#notif').text(notif)
+    }
   })
 
   socket.on('pixel updated', async (pixelData, color, currentUser, timeStamp) => {
@@ -57,6 +59,11 @@
     update.textContent = `${currentUser.user.username} changed pixel (x:${pixelData.x} y:${pixelData.y}) to ${color} (${(moment(timeStamp).fromNow())})`
     activityLog.appendChild(update)
     window.scrollTo(0, document.body.scrollHeight)
+    if(!currentUser.user.username === myUser.user.username){
+      notif += 1
+      console.log(`notif:${notif}`)
+      $('#notif').text(notif)
+    }
   })
 
 

@@ -11,7 +11,16 @@ let previousColor
 
 
 const generateTitle = () => {
-  return '<h1 class="text-center mb-3">Pixel Canvas</h1>'
+  return `<h1 h1 id="pixel-canvas-title" class="text-center">Pixel Canvas</h1>
+  <div  class="d-flex mb-1">
+    <div class="info-spacer"></div>
+    <div>
+      <p id="pixel-canvas-intro" class="d-flex text-center justify-content-center">Welcome to the pixel canvas. You will be partaking in a social experiment along with everyone else in the world. Below is a canvas where you can change the individual colors of each pixel to your own liking. Each time a pixel color is set, it cannot be changed to another color for 30 mins. You are free to do whatever you want here. Have fun!</p>
+    </div>
+    <div class="info-spacer"></div>
+  </div>
+
+  `
 }
 
 const generateCanvas = ({ isLoading, pixels }) => {
@@ -24,16 +33,16 @@ const generateCanvas = ({ isLoading, pixels }) => {
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Sign in required</h5>
+            <h4 class="modal-title">Sign in required</h4>
             <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+              <span class="text-center" aria-hidden="true">&times;</span>
             </button>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" onclick="window.location.href='/auth/login';">
               log in
             </button>
-            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -42,23 +51,25 @@ const generateCanvas = ({ isLoading, pixels }) => {
 
     <div id="color-modal" class="modal" tabindex="-1" role="dialog">
       <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
+        <div class="modal-content d-flex text-center justify-content-center">
           <div class="modal-header">
-            <h5 class="modal-title">Paint this Pixel!</h5>
+            <h4 class="modal-title">Paint this Pixel!</h4>
             <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div id="color-modal-info" class="modal-body">
 
+          <div id="color-modal-info" class="modal-body">
           </div>
-          <div id='color-modal-color' class="container">
-              <label for="colorpicker">Choose pixel color:</label>
+
+          <div id='color-modal-color' class="container d-flex justify-content-center">
+              <label for="colorpicker">Choose your pixel color:</label>
               <input type="color" id="colorpicker" value="${previousColor ? previousColor : "#000000" }">
           </div>
+
           <div class="modal-footer">
             <button id="confirm" type="button" class="btn btn-primary">Confirm</button>
-            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
@@ -170,9 +181,11 @@ const handlePixelClick = (e) => {
 
   const $pixelInfo = (pixelData) => {
     return`
-    <p>Previous color:</p>
-    <div class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>
-    <button id="color-copy" type="button" class="btn btn-primary" data-color="${pixelData.RGB}"">Copy color</button>
+    <p id="previous-color" >Previous color:</p>
+    <div class="d-flex justify-content-center align-items-center">
+    <div id="color-box" class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${pixelData.RGB}; Width:30px; height:30px"></div>
+    <button id="color-copy" type="button" class="btn btn-primary ml-1" data-color="${pixelData.RGB}"">Copy color</button>
+    </div>
     `
   }
 
@@ -181,7 +194,7 @@ const handlePixelClick = (e) => {
         <div class="modal-dialog modal-dialog-centered" role="document">
           <div class="modal-content">
             <div class="modal-header">
-              <h5 class="modal-title">This pixel is occupied!</h5>
+              <h4 class="modal-title">This pixel is occupied!</h4>
               <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
               </button>
@@ -199,7 +212,7 @@ const handlePixelClick = (e) => {
             </div>
 
             <div class="modal-footer">
-              <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
 
           </div>
@@ -284,7 +297,7 @@ const handleModalConfirm = (e) => {
         <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Pixel successfully painted!</h5>
+            <h4 class="modal-title-painted">Pixel successfully painted!</h4>
             <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -296,7 +309,7 @@ const handleModalConfirm = (e) => {
             <p>Unlocks in: <b>${timeLeft} mins </b> </p>
           </div>
           <div class="modal-footer">
-            <button id="modal-close" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>
