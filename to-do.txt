@@ -16,7 +16,7 @@ backend
 -display comments
 
 questions to ask
--how to que updates on pixels
+-how to que updates on pixels//done
 -how come pixel border cannot be smaller
 
 extra features:
@@ -40,5 +40,5 @@ dropdb -f pixel_project
 bugs fix needed:
 pixels are not updating//done
 why does the page scroll down everytime submit// done
-navbar toggle icon color
-fix enter button logging multiple times
+navbar toggle icon color//done
+fix enter button logging multiple times// done

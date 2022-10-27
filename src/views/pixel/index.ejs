@@ -2,6 +2,7 @@
 <%- contentFor('scripts') %>
 <script>
 var socket = io();
+let pixels
 let currentPixel
 let user
 let pixelData
@@ -9,22 +10,26 @@ let coolDown = 30
 let currentUser
 let previousColor
 let enterPress =false
+const queue = []
 
+const setPixel = (pixelData) => {
+  const oldPixel = pixels[pixelData.y][pixelData.x]
+
+  if (pixelData.id > oldPixel.id) {
+    const $updatingPixel = $(`#x-${pixelData.x}-y-${pixelData.y}`)
+    $updatingPixel.css("background-color", pixelData.RGB)
+    pixels[pixelData.y][pixelData.x] = pixelData
+  }
+}
 
 const generateTitle = () => {
-  return `<h1 h1 id="pixel-canvas-title" class="text-center">Pixel Canvas</h1>
-  <div  class="d-flex mb-1">
-    <div class="info-spacer"></div>
-    <div>
-      <p id="pixel-canvas-intro" class="d-flex text-center justify-content-center">Welcome to the pixel canvas. You will be partaking in a social experiment along with everyone else in the world. Below is a canvas where you can change the individual colors of each pixel to your own liking. Each time a pixel color is set, it cannot be changed to another color for 30 mins. You are free to do whatever you want here. Have fun!</p>
-    </div>
-    <div class="info-spacer"></div>
-  </div>
-
+  return `
+    <h1 h1 id="pixel-canvas-title" class="text-center">Pixel Canvas</h1>
+    <p id="pixel-canvas-intro" class="text-center mx-auto mb-3">Welcome to the pixel canvas. You will be partaking in a social experiment along with everyone else in the world. Below is a canvas where you can change the individual colors of each pixel to your own liking. Each time a pixel color is set, it cannot be changed to another color for 30 mins. You are free to do whatever you want here. Have fun!</p>
   `
 }
 
-const generateCanvas = ({ isLoading, pixels }) => {
+const generateCanvas = ({ isLoading }) => {
   if (isLoading) return `<div class="text-center mb-3">Loading...</div>`
   return `
     <div id="pixel-taken-modal" class="modal" tabindex="-1" role="dialog">
@@ -80,46 +85,50 @@ const generateCanvas = ({ isLoading, pixels }) => {
       ${
         pixels.map((row, y) => {
           return `
-          <div
-            class="row justify-content-center align-items-center flex-nowrap mx-auto"
-            style="width: ${row.length * 9}px
-            border: .5px solid #C8C8C8;
-            "
-          >
-            ${row.map((col, x) => {
-            return `
-                  <div
-                    id="x-${x}-y-${y}"
-                    data-x="${x}"
-                    data-y="${y}"
-                    data-toggle="popover"
-                    data-placement="top"
-                    data-content="information"
-                    data-bs-container="body"
-                    data-bs-toggle="popover"
-                    data-bs-placement="top"
-                    data-bs-content="pixel information"
-                    class="pixel-col p-0"
-                    style="
-                      background-color: ${col.RGB};
-                      width: 9px;
-                      height: 9px;
-                      border: .1px solid #C8C8C8;
-                    "
-                  >
-                  </div>
-                `
-          }).join('')
-            }
-          </div>
-        `
+            <div
+              class="row justify-content-center align-items-center flex-nowrap mx-auto"
+              style="
+                white-space: nowrap;
+                width: ${row.length * 9}px;
+                //border: .5px solid #C8C8C8;
+              "
+            >
+              ${
+                row.map((col, x) => {
+                  return `
+                    <div
+                      id="x-${x}-y-${y}"
+                      data-x="${x}"
+                      data-y="${y}"
+                      data-toggle="popover"
+                      data-placement="top"
+                      data-content="information"
+                      data-bs-container="body"
+                      data-bs-toggle="popover"
+                      data-bs-placement="top"
+                      data-bs-content="pixel information"
+                      class="pixel-col p-0"
+                      style="
+                        white-space: nowrap;
+                        background-color: ${col.RGB};
+                        width: 9px;
+                        height: 9px;
+                        border: .1px solid #C8C8C8;
+                      "
+                    >
+                    </div>
+                  `
+                }).join('')
+              }
+            </div>
+          `
         }).join('')
       }
     </div>
   `
 }
 
-const generatePage = async(info) => {
+const generatePage = async(info = {}) => {
   const $page = $('#pages-Pixel-index')
   const $title = generateTitle(info)
   const $canvas = generateCanvas(info)
@@ -130,13 +139,16 @@ const generatePage = async(info) => {
 const getPixels = async() => {
   //console.log('page updated')
   axios({
-        method: 'GET',
-        url: '/api/pixels'
-      }).then((resp) => {
-        var pixels = resp.data.pixel
-        //console.log(pixels)
-        generatePage({pixels})
-      })
+    method: 'GET',
+    url: '/api/pixels'
+  }).then((resp) => {
+    pixels = resp.data.pixel
+    queue.forEach((pixelData) => {
+      setPixel(pixelData)
+    })
+    //console.log(pixels)
+    generatePage()
+  })
 }
 
 const getMyProfileIndex = () => {
@@ -305,7 +317,7 @@ const handleModalConfirm = (e) => {
   //console.log(currentPixel)
   //console.log(currentUser)
   //console.log(pixelData)
-  //console.log(color)
+  // console.log(color)
   socket.emit('pixel update', pixelData, color, currentUser)
   $("#color-modal").modal('hide')
   pixelPainted(pixelData, color, currentUser)
@@ -357,7 +369,6 @@ const pixelPainted = async(pixelData, color, currentUser) => {
   //console.log('modal added')
 }
 
-
 const copyColorClick = (e) => {
   e.preventDefault()
   //console.log('copied')
@@ -397,12 +408,16 @@ const MouseHover = (e) => {
   )
 }
 
-socket.on('pixel updated', async (pixelData, color, UserTrigger, timeStamp) => {
+socket.on('pixel updated', async (pixelData) => {
   //console.log(pixelData)
   //console.log($(`#x-${pixelData.x}-y-${pixelData.y}`))
   //$(currentPixel).css("background-color", colorHex.val())
-  const $updatingPixel = $(`#x-${pixelData.x}-y-${pixelData.y}`)
-  $updatingPixel.css("background-color", color)
+  // console.log(pixelData)
+  if (pixels) {
+    setPixel(pixelData)
+  } else {
+    queue.push(pixelData)
+  }
 })
 
 $(document).ready(() => {
@@ -421,4 +436,4 @@ $(document).ready(() => {
 </script>
 
 <%- contentFor('body') %>
-<div id="pages-Pixel-index" class="mb-6"></div>
+<div id="pages-Pixel-index" class="mb-6 container"></div>
