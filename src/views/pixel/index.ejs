@@ -235,27 +235,27 @@ const handlePixelClick = (e) => {
     //console.log(Math.floor(currentTime-timeCreated))
     //console.log(user.user.username)
 
-      if (user.user.username === 'admin') {
-        console.log('admin overwrite')
-        const $pixelColorModal = $("#color-modal-info")
-        //console.log(pixelData.RGB)
-        $pixelColorModal.html('').append($pixelInfo(pixelData))
-        $("#color-modal").modal('show')
-        enterPress = true
-        $("#color-modal").keyup(function (event) {
-          if (enterPress == true) {
-            var keycode = (event.keyCode ? event.keyCode : event.which);
-            if (keycode == '13') {
-              console.log('enter')
-              enterPress = false
-              handleModalConfirm(e)
-            }
-          }
-        })
-      }
+      //if (user.user.username === 'admin') {
+      //  console.log('admin overwrite')
+      //  const $pixelColorModal = $("#color-modal-info")
+      //  //console.log(pixelData.RGB)
+      //  $pixelColorModal.html('').append($pixelInfo(pixelData))
+      //  $("#color-modal").modal('show')
+      //  enterPress = true
+      //  $("#color-modal").keyup(function (event) {
+      //    if (enterPress == true) {
+      //      var keycode = (event.keyCode ? event.keyCode : event.which);
+      //      if (keycode == '13') {
+      //        console.log('enter')
+      //        enterPress = false
+      //        handleModalConfirm(e)
+      //      }
+      //    }
+      //  })
+      //}
 
 
-    if (currentTime - timeCreated > coolDown) {
+    if (currentTime - timeCreated > coolDown || user.user.username === 'admin') {
       if (user) {
         const $pixelColorModal = $("#color-modal-info")
         //console.log(pixelData.RGB)
