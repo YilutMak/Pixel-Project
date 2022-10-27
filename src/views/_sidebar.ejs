@@ -54,7 +54,7 @@
   })
 
   socket.on('pixel updated', async (pixelData, color, currentUser, timeStamp) => {
-    console.log(timeStamp)
+    //console.log(timeStamp)
     var update = document.createElement('li')
     update.style.color = logColor
     update.textContent = `${currentUser.user.username} changed pixel (x:${pixelData.x} y:${pixelData.y}) to ${color} (${(moment(timeStamp).fromNow())})`
@@ -69,7 +69,7 @@
 
 
   const generateMessageActivity = ({ messageActivities }) => {
-    console.log(new Date(messageActivities[0].timeStamp))
+    //console.log(new Date(messageActivities[0].timeStamp))
     for (let index = 3; index > 0; index--) {
       var receivedMessage = document.createElement('li')
       receivedMessage.style.color = messageColor
@@ -93,7 +93,7 @@
   }
 
   const messageActivity = async () => {
-      console.log('page updated')
+      //console.log('page updated')
       axios({
         method: 'GET',
         url: '/api/messageActivity'

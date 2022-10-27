@@ -124,11 +124,11 @@ const generatePage = async(info) => {
   const $title = generateTitle(info)
   const $canvas = generateCanvas(info)
   $page.html('').append($title).append($canvas)
-  console.log('page generated')
+  //console.log('page generated')
 }
 
 const getPixels = async() => {
-  console.log('page updated')
+  //console.log('page updated')
   axios({
         method: 'GET',
         url: '/api/pixels'
@@ -163,7 +163,7 @@ const getPixel = async (xCoord, yCoord) => {
       y: yCoord
     }
   }).then((resp) => {
-    console.log('pixel found')
+    //console.log('pixel found')
     //console.log(resp.data)
     pixelData = resp.data
   }).catch(() => {
@@ -238,7 +238,7 @@ const handlePixelClick = (e) => {
       if (user) {
 
         const $pixelColorModal = $("#color-modal-info")
-        console.log(pixelData.RGB)
+        //console.log(pixelData.RGB)
         $pixelColorModal.html('').append($pixelInfo(pixelData))
         $("#color-modal").modal('show')
         $("#color-modal").keyup(function (event) {
@@ -277,74 +277,66 @@ const handleModalClose = (e) => {
 
 const handleModalConfirm = (e) => {
   e.preventDefault()
-  console.log('confirm')
+  //console.log('confirm')
   const colorHex = $('#colorpicker')
   const color = colorHex.val()
   previousColor = color
-
   //console.log(currentPixel)
   //console.log(currentUser)
   //console.log(pixelData)
   //console.log(color)
-
   socket.emit('pixel update', pixelData, color, currentUser)
-
-
-  socket.on('pixel updated', async(pixelData, color, UserTrigger, timeStamp) => {
-    console.log(pixelData)
-    console.log($(`#x-${pixelData.x}-y-${pixelData.y}`))
-    const $updatingPixel = $(`#x-${pixelData.x}-y-${pixelData.y}`)
-    $updatingPixel.css("background-color", color)
-
-    $("#color-modal").modal('hide')
-    enterPress = true
-    const username = UserTrigger.user.username
-    await getPixel(pixelData.x, pixelData.y)
-    //console.log(pixelData)
-    const updateTime = (Math.floor((new Date(timeStamp)) / 1000) / 60 )
-    const currentTime = (Math.floor((Date.now()) / 1000)) / 60
-    timeLeft = Math.floor(coolDown - (currentTime - updateTime))
-    console.log('time left:', timeLeft)
-
-    $pixelUpdatedInfo = (username, timeLeft, color) => {
-      return `
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content d-flex text-center justify-content-center">
-          <div class="modal-header">
-            <h4 class="modal-title-painted">Pixel successfully painted!</h4>
-            <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-
-          <div id="pixel-taken-body" class="modal-body">
-            <p class="mb-2 mt-2"> Pixel created by: <b id="user">${username}</b> </p>
-            <div class="d-flex justify-content-center align-items-center text-center">
-              <p class="mb-0">Color painted:</p>
-                <div id="color-box" class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${color}; Width:30px; height:30px"></div>
-            </div>
-            <p class="mt-2">Unlocks in: <b id="timeleft">${timeLeft} mins </b> </p>
-
-          <div class="modal-footer p-1">
-            <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          </div>
-        </div>
-      </div>
-      `
-    }
-  //$(currentPixel).css("background-color", colorHex.val())
-
-
-  const $pixelTakenModal = $('#pixel-taken-modal')
-  $pixelTakenModal.html('').append($pixelUpdatedInfo(username, timeLeft, color))
-  getMyProfileIndex()
-  console.log(myUser)
-  if(UserTrigger.user.username === myUser.user.username){
-    $("#pixel-taken-modal").modal('show')
-  }
-  console.log('modal added')
-  })
+  $("#color-modal").modal('hide')
+  enterPress = true
+  pixelPainted(pixelData, color, currentUser)
+  console.log('confirmed')
 }
+
+const pixelPainted = async(pixelData, color, currentUser) => {
+  console.log('pixel painted successfully')
+  await getPixel(pixelData.x, pixelData.y)
+  //console.log(pixelData)
+  const updateTime = ((Math.floor((Date.now()) / 1000)) / 60)
+  const unlockTime = ((Math.floor((Date.now()) / 1000)) / 60)+ coolDown
+  //console.log(unlockTime)
+  timeLeft = Math.floor(unlockTime - updateTime)
+  //console.log('time left:', timeLeft)
+
+  $pixelUpdatedInfo = (sessionUser, timeLeft, color) => {
+    return `
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content d-flex text-center justify-content-center">
+      <div class="modal-header">
+        <h4 class="modal-title-painted">Pixel successfully painted!</h4>
+        <button id="modal-close" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="pixel-taken-body" class="modal-body">
+        <p class="mb-2 mt-2"> Pixel created by: <b id="user">${sessionUser}</b> </p>
+        <div class="d-flex justify-content-center align-items-center text-center">
+          <p class="mb-0">Color painted:</p>
+            <div id="color-box" class="d-inline-flex" style="border: .1px solid #C8C8C8; background-color:${color}; Width:30px; height:30px"></div>
+        </div>
+        <p class="mt-2">Unlocks in: <b id="timeleft">${timeLeft} mins </b> </p>
+      <div class="modal-footer p-1">
+        <button id="modal-close-bottom" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+  `
+  }
+
+  //const pixelOwner = pixelData.user.username
+  const sessionUser = myUser.user.username
+  //console.log('pixelOwner:', pixelOwner, 'myUser', sessionUser)
+  const $pixelTakenModal = $('#pixel-taken-modal')
+  $pixelTakenModal.html('').append($pixelUpdatedInfo(sessionUser, timeLeft, color))
+  $("#pixel-taken-modal").modal('show')
+
+  //console.log('modal added')
+}
+
 
 const copyColorClick = (e) => {
   e.preventDefault()
@@ -385,6 +377,14 @@ const MouseHover = (e) => {
   )
 }
 
+socket.on('pixel updated', async (pixelData, color, UserTrigger, timeStamp) => {
+  //console.log(pixelData)
+  //console.log($(`#x-${pixelData.x}-y-${pixelData.y}`))
+  //$(currentPixel).css("background-color", colorHex.val())
+  const $updatingPixel = $(`#x-${pixelData.x}-y-${pixelData.y}`)
+  $updatingPixel.css("background-color", color)
+})
+
 $(document).ready(() => {
   generatePage({ isLoading: true })
   getPixels()
@@ -397,7 +397,6 @@ $(document).ready(() => {
   $('#pages-Pixel-index').on('mouseover', '.pixel-col', MouseHover)
   //$('#pages-Pixel-index').on('mouseover', '#navbar-username', MouseHoverUsername)
 })
-
 
 </script>
 
