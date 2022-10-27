@@ -38,5 +38,6 @@ dropdb -f pixel_project
 
 
 bugs fix needed:
-pixels are not updating
+pixels are not updating//done
 navbar toggle icon color
+fix enter button logging multiple times

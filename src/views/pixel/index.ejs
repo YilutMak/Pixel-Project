@@ -233,14 +233,27 @@ const handlePixelClick = (e) => {
     //console.log(timeCreated)
     //console.log(currentTime)
     //console.log(Math.floor(currentTime-timeCreated))
+    //console.log(user.user.username)
 
-    if (currentTime - timeCreated > coolDown) {
-      if (user) {
-
+      if (user.user.username === 'admin') {
+        console.log('admin overwrite')
         const $pixelColorModal = $("#color-modal-info")
         //console.log(pixelData.RGB)
         $pixelColorModal.html('').append($pixelInfo(pixelData))
         $("#color-modal").modal('show')
+        enterPress = true
+        $("#color-modal").keyup(function (event) {
+        })
+      }
+
+
+    if (currentTime - timeCreated > coolDown) {
+      if (user) {
+        const $pixelColorModal = $("#color-modal-info")
+        //console.log(pixelData.RGB)
+        $pixelColorModal.html('').append($pixelInfo(pixelData))
+        $("#color-modal").modal('show')
+        enterPress = true
         $("#color-modal").keyup(function (event) {
           if (enterPress == true) {
             var keycode = (event.keyCode ? event.keyCode : event.which);
@@ -287,7 +300,6 @@ const handleModalConfirm = (e) => {
   //console.log(color)
   socket.emit('pixel update', pixelData, color, currentUser)
   $("#color-modal").modal('hide')
-  enterPress = true
   pixelPainted(pixelData, color, currentUser)
   console.log('confirmed')
 }
