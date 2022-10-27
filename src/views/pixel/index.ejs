@@ -8,7 +8,7 @@ let pixelData
 let coolDown = 30
 let currentUser
 let previousColor
-let enterPress =true
+let enterPress =false
 
 
 const generateTitle = () => {
@@ -241,7 +241,6 @@ const handlePixelClick = (e) => {
         //console.log(pixelData.RGB)
         $pixelColorModal.html('').append($pixelInfo(pixelData))
         $("#color-modal").modal('show')
-        enterPress = true
         $("#color-modal").keyup(function (event) {
         })
       }

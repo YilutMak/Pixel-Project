@@ -45,7 +45,7 @@
     receivedMessage.style.color = messageColor
     receivedMessage.textContent = `${user.data.username}: ${msg} (${(moment(timeStamp).fromNow())})`
     activityLog.appendChild(receivedMessage)
-    window.scrollTo(0, document.body.scrollHeight)
+    //window.scrollTo(0, document.body.scrollHeight)
     if (user.data.username !== myUser.user.username) {
       notif += 1
       console.log(`notif:${notif}`)
@@ -59,7 +59,7 @@
     update.style.color = logColor
     update.textContent = `${currentUser.user.username} changed pixel (x:${pixelData.x} y:${pixelData.y}) to ${color} (${(moment(timeStamp).fromNow())})`
     activityLog.appendChild(update)
-    window.scrollTo(0, document.body.scrollHeight)
+    //window.scrollTo(0, document.body.scrollHeight)
     if(currentUser.user.username !== myUser.user.username){
       notif += 1
       console.log(`notif:${notif}`)
@@ -75,7 +75,7 @@
       receivedMessage.style.color = messageColor
       receivedMessage.textContent = `${messageActivities[index].user.username}: ${messageActivities[index].message} (${(moment(messageActivities[index].timeStamp).fromNow())})`
       activityLog.appendChild(receivedMessage)
-      window.scrollTo(0, document.body.scrollHeight)
+      //window.scrollTo(0, document.body.scrollHeight)
     }
   }
 
@@ -88,7 +88,7 @@
       //update.innerHTML(`style:'color: blue'`)
       update.textContent = `${pixelActivities[index].user.username} changed pixel (x:${pixelActivities[index].x} y:${pixelActivities[index].y}) to ${pixelActivities[index].RGB} (${(moment(pixelActivities[index].timeStamp).fromNow())})`
       activityLog.appendChild(update)
-      window.scrollTo(0, document.body.scrollHeight)
+      //window.scrollTo(0, document.body.scrollHeight)
     }
   }
 
